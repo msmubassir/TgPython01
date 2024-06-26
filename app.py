@@ -1,10 +1,12 @@
+import os  # Add this line at the top
 from flask import Flask, request, render_template
-import sqlite3
 from telegram import Bot
+import sqlite3
 
 app = Flask(__name__)
 bot = Bot(token=os.getenv('BOT_TOKEN'))
 
+# Database setup
 conn = sqlite3.connect('bot.db', check_same_thread=False)
 cursor = conn.cursor()
 
