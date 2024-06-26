@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 # Define your bot token from environment variable
 BOT_TOKEN = os.getenv('BOT_TOKEN')
+PORT = int(os.environ.get('PORT', 8443))
 
 # Define command handlers
 async def start(update: Update, context: CallbackContext) -> None:
@@ -31,8 +32,13 @@ def main() -> None:
     application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
-    # Start the Bot
-    application.run_polling()
+    # Start the webhook
+    application.run_webhook(
+        listen="0.0.0.0",
+        port=PORT,
+        url_path=BOT_TOKEN,
+        webhook_url=f"https://your-app-name.onrender.com/{BOT_TOKEN}"
+    )
 
 if __name__ == '__main__':
     main()
