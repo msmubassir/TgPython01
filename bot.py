@@ -1,4 +1,5 @@
 import logging
+import os
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
 
@@ -9,8 +10,8 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# Define your bot token
-BOT_TOKEN = '6746078978:AAHjRhgeUWMXbHaZPmjGn_2I_wtYu_-Qhu8'
+# Define your bot token from environment variable
+BOT_TOKEN = os.getenv('BOT_TOKEN')
 
 # Define command handlers
 async def start(update: Update, context: CallbackContext) -> None:
