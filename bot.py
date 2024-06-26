@@ -58,7 +58,7 @@ def main() -> None:
     # Start the webhook
     application.run_webhook(
         listen="0.0.0.0",
-        port=8443,
+        port=int(os.environ.get('PORT', 8443)),
         url_path=BOT_TOKEN,
         webhook_url=f"https://tgpython01.onrender.com/{BOT_TOKEN}"
     )
