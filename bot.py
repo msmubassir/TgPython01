@@ -37,7 +37,7 @@ def main() -> None:
         listen="0.0.0.0",
         port=PORT,
         url_path=BOT_TOKEN,
-        webhook_url=f"https://your-app-name.onrender.com/{BOT_TOKEN}"
+        webhook_url=f"https://tgpython01.onrender.com/{BOT_TOKEN}"
     )
 
 if __name__ == '__main__':
