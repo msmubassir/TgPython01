@@ -1,30 +1,45 @@
+from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+import logging
 
-# Define a function for /start command
-def start(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Hello! I am your bot.")
+# Replace 'YOUR_BOT_TOKEN' with your actual Telegram bot token
+TOKEN = '6746078978:AAHjRhgeUWMXbHaZPmjGn_2I_wtYu_-Qhu8'
 
-# Define a function for handling messages
-def echo(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text=update.message.text)
+# Enable logging
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Function to handle /start command
+def start(update: Update, context):
+    update.message.reply_text('Hello! I am your bot.')
+
+# Function to handle /help command
+def help_command(update: Update, context):
+    update.message.reply_text('Help command received.')
+
+# Function to handle specific messages
+def echo(update: Update, context):
+    if update.message.text.lower() == 'hi':
+        update.message.reply_text('Hello there!')
+    elif update.message.text.lower() == 'how are you?':
+        update.message.reply_text('I am fine, thank you!')
+    else:
+        update.message.reply_text('I did not understand your message.')
 
 def main():
-    # Create the Updater and pass it your bot's token.
-    updater = Updater(token='6746078978:AAHjRhgeUWMXbHaZPmjGn_2I_wtYu_-Qhu8', use_context=True)
+    updater = Updater(TOKEN, use_context=True)
+    dp = updater.dispatcher
 
-    # Get the dispatcher to register handlers
-    dispatcher = updater.dispatcher
+    # Handlers for commands
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("help", help_command))
 
-    # Register handler for /start command
-    start_handler = CommandHandler('start', start)
-    dispatcher.add_handler(start_handler)
-
-    # Register handler for messages
-    echo_handler = MessageHandler(Filters.text & (~Filters.command), echo)
-    dispatcher.add_handler(echo_handler)
+    # Handler for messages
+    dp.add_handler(MessageHandler(Filters.text & (~Filters.command), echo))
 
     # Start the Bot
     updater.start_polling()
+    logger.info("Bot started polling...")
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT, SIGTERM or SIGABRT
     updater.idle()
