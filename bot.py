@@ -1,5 +1,6 @@
 import asyncio
 from aiogram import Bot, Dispatcher, types
+from aiogram.utils import executor
 
 # Replace 'YOUR_BOT_TOKEN' with your actual Telegram bot token
 TOKEN = '6746078978:AAHjRhgeUWMXbHaZPmjGn_2I_wtYu_-Qhu8'
@@ -29,14 +30,9 @@ async def say_how_are_you(message: types.Message):
 
 # Main function to start the bot
 async def main():
-    # Start long-polling
-    await dp.start_polling()
-
-    # Run the bot until it receives SIGINT, SIGTERM or SIGABRT
-    await dp.idle()
+    # Start the long-polling mode
+    await executor.start_polling(dp, skip_updates=True)
 
 if __name__ == '__main__':
-    # Create event loop
-    loop = asyncio.get_event_loop()
-    # Run main coroutine
-    loop.run_until_complete(main())
+    # Run the main coroutine
+    asyncio.run(main())
