@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 # Define your bot token from environment variable
 BOT_TOKEN = os.getenv('BOT_TOKEN')
-PORT = int(os.environ.get('PORT', 8443))
 
 # Database setup
 conn = sqlite3.connect('bot.db', check_same_thread=False)
@@ -59,7 +58,7 @@ def main() -> None:
     # Start the webhook
     application.run_webhook(
         listen="0.0.0.0",
-        port=8444,
+        port=int(os.environ.get('PORT', 8443)),
         url_path=BOT_TOKEN,
         webhook_url=f"https://tgpython01.onrender.com/{BOT_TOKEN}"
     )
