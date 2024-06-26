@@ -1,5 +1,6 @@
 import logging
 import os
+import sqlite3
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
 
@@ -14,14 +15,37 @@ logger = logging.getLogger(__name__)
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 PORT = int(os.environ.get('PORT', 8443))
 
+# Database setup
+conn = sqlite3.connect('bot.db', check_same_thread=False)
+cursor = conn.cursor()
+
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    username TEXT,
+    message TEXT
+)
+''')
+
+conn.commit()
+
 # Define command handlers
 async def start(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /start is issued."""
     await update.message.reply_text('Hello! I am your Telegram bot.')
 
 async def echo(update: Update, context: CallbackContext) -> None:
-    """Echo the user message."""
-    await update.message.reply_text(update.message.text)
+    """Echo the user message and log it."""
+    user_id = update.message.from_user.id
+    username = update.message.from_user.username
+    message = update.message.text
+
+    cursor.execute('INSERT INTO messages (user_id, username, message) VALUES (?, ?, ?)',
+                   (user_id, username, message))
+    conn.commit()
+
+    await update.message.reply_text(message)
 
 def main() -> None:
     """Start the bot."""
