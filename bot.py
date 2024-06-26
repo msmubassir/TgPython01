@@ -1,38 +1,44 @@
-import asyncio
-from aiogram import Bot, Dispatcher, types
-from aiogram.utils import executor
+import logging
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
-# Replace 'YOUR_BOT_TOKEN' with your actual Telegram bot token
-TOKEN = '6746078978:AAHjRhgeUWMXbHaZPmjGn_2I_wtYu_-Qhu8'
+# Enable logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
+)
 
-# Initialize bot and dispatcher
-bot = Bot(token=TOKEN)
-dp = Dispatcher(bot)
+logger = logging.getLogger(__name__)
 
-# Handler for /start command
-@dp.message_handler(commands=['start'])
-async def send_welcome(message: types.Message):
-    await message.answer("Hello! I am your bot.")
+# Define your bot token
+BOT_TOKEN = '6746078978:AAHjRhgeUWMXbHaZPmjGn_2I_wtYu_-Qhu8'
 
-# Handler for /help command
-@dp.message_handler(commands=['help'])
-async def send_help(message: types.Message):
-    await message.answer("Help command received.")
+# Define command handlers
+def start(update: Update, context: CallbackContext) -> None:
+    """Send a message when the command /start is issued."""
+    update.message.reply_text('Hello! I am your Telegram bot.')
 
-# Handler for specific messages
-@dp.message_handler(lambda message: message.text.lower() == 'hi')
-async def say_hi(message: types.Message):
-    await message.answer("Hello there!")
+def echo(update: Update, context: CallbackContext) -> None:
+    """Echo the user message."""
+    update.message.reply_text(update.message.text)
 
-@dp.message_handler(lambda message: message.text.lower() == 'how are you?')
-async def say_how_are_you(message: types.Message):
-    await message.answer("I am fine, thank you!")
+def main() -> None:
+    """Start the bot."""
+    # Create the Updater and pass it your bot's token.
+    updater = Updater(BOT_TOKEN)
 
-# Main function to start the bot
-async def main():
-    # Start the long-polling mode
-    await executor.start_polling(dp, skip_updates=True)
+    # Get the dispatcher to register handlers
+    dispatcher = updater.dispatcher
+
+    # Register handlers
+    dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+
+    # Start the Bot
+    updater.start_polling()
+
+    # Run the bot until you press Ctrl-C or the process receives SIGINT,
+    # SIGTERM or SIGABRT
+    updater.idle()
 
 if __name__ == '__main__':
-    # Run the main coroutine
-    asyncio.run(main())
+    main()
